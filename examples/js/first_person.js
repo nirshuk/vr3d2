@@ -49,10 +49,10 @@ function initScene() {
 
   // Initialize the renderer
   renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setClearColor(0xdbf7ff);
+  renderer.setClearColor(0xE0E0FF);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-   scene.fog = new THREE.Fog(0xdbf7ff, 300, 700);
+   scene.fog = new THREE.Fog(0xA3C2FF, 300, 700);
 
   element = document.getElementById('viewport');
   element.appendChild(renderer.domElement);
@@ -63,8 +63,8 @@ function initScene() {
 
 function initLights(){
 
-  ambient = new THREE.AmbientLight(0x222222);
-  scene.add(ambient);
+  hemisphere = new THREE.HemisphereLight(0x222222);
+  scene.add(hemisphere);
 
   point = new THREE.DirectionalLight( 0xffffff, 1, 0, Math.PI, 1 );
   point.position.set( -250, 250, 150 );
@@ -75,75 +75,105 @@ function initLights(){
 var floorTexture;
 function initGeometry(){
 
-  floorTexture = new THREE.ImageUtils.loadTexture( "textures/tile.jpg" );
+  floorTexture = new THREE.ImageUtils.loadTexture( "textures/grass.jpg" );
   floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
   floorTexture.repeat.set( 50, 50 );
   floorTexture.anisotropy = 32;
 
-  var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, transparent:true, opacity:0.80 } );
-  var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+  var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, transparent:true, opacity:1.0 } );
+  var floorGeometry = new THREE.PlaneGeometry(2000, 2000, 10, 10);
   var floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.rotation.x = -Math.PI / 2;
 
   scene.add(floor);
 
   // add some boxes.
-  var boxTexture = new THREE.ImageUtils.loadTexture( "textures/blue_blue.jpg" );
-  for(var i = 0; i < 200; i++){
-    var material = new THREE.MeshLambertMaterial({ emissive:0x505050, map: boxTexture, color: 0xffffff});
-    
-    var height = Math.random() * 150+10;
-    var width = Math.random() * 20 + 2;
-    
-    var box = new THREE.Mesh( new THREE.CubeGeometry(width, height, width), material);
+  var boxTexture = new THREE.ImageUtils.loadTexture( "textures/b1.jpg" );
+  var material = new THREE.MeshLambertMaterial({ emissive:0x505050, map: boxTexture, color: 0xffffff});
+  
+  var height = 2 * 100+10;
+  var width = 4*0.4 * 20 + 2;
+  var box = new THREE.Mesh( new THREE.CubeGeometry(width, height, width), material);
+  box.position.set(0.1 * 1000 - 500, 0.3/2 ,0.2 * 1000 - 500);
+  box.rotation.set(0, 0.3 * Math.PI * 2, 0);
+  boxes.push(box);
+  scene.add(box);
+  
+  boxTexture = new THREE.ImageUtils.loadTexture( "textures/b2.jpg" );
+  material = new THREE.MeshLambertMaterial({ emissive:0x505050, map: boxTexture, color: 0xffffff});
+  height = 4 * 100+10;
+  width = 5*0.4 * 20 + 2; 
+  box = new THREE.Mesh( new THREE.CubeGeometry(width, height, width), material);
+  box.position.set(0.5 * 1000 - 500, (0.4)/2 ,0.2 * 1000 - 500);
+  box.rotation.set(0, 0.2 * Math.PI * 2, 0);
+  boxes.push(box);
+  scene.add(box);
+  
+  boxTexture = new THREE.ImageUtils.loadTexture( "textures/b3.jpg" );
+  material = new THREE.MeshLambertMaterial({ emissive:0x505050, map: boxTexture, color: 0xffffff});
+  height = 3.5 * 100+10;
+  width = 5*0.6 * 20 + 2; 
+  box = new THREE.Mesh( new THREE.CubeGeometry(width, height, width), material);
+  box.position.set(0.1 * 1000 - 500, (0.6)/2 ,0.7 * 1000 - 500);
+  box.rotation.set(0, 0.2 * Math.PI * 2, 0);
+  boxes.push(box);
+  scene.add(box);
+  
+  boxTexture = new THREE.ImageUtils.loadTexture( "textures/b1.jpg" );
+  material = new THREE.MeshLambertMaterial({ emissive:0x505050, map: boxTexture, color: 0xffffff});
+  height = 0.5 * 10+10;
+  width = 2; 
+  box = new THREE.Mesh( new THREE.CubeGeometry(width, height, width), material);
+  box.position.set(1 * 1000 - 500, 0.2/2 ,0.5 * 1000 - 500);
+  box.rotation.set(0, 0.2 * Math.PI * 2, 0);
+  boxes.push(box);
+  scene.add(box);
+  
+  
+  //Adding evidences
+  var geometry   = new THREE.SphereGeometry(4,10,10);
+  var material1  = new THREE.MeshPhongMaterial();
+  material1.map = THREE.ImageUtils.loadTexture("textures/evidence1.jpg");
+  var evidenceMesh1 = new THREE.Mesh(geometry, material1);
+  evidenceMesh1.position.set(0.6 * 1000 - 500, -0.1 * 960 + 100 ,0.6 * 1000 - 500);
+  scene.add(evidenceMesh1);
+  
+  evidenceTexture2 = new THREE.ImageUtils.loadTexture( "textures/evidence2.jpg" );
+  var material2 = new THREE.MeshLambertMaterial({map: evidenceTexture2});
+  box = new THREE.Mesh( new THREE.CubeGeometry(3, 0.5 * 10+5, 8), material2);
+  box.position.set(0.54 * 1000 - 500, 0.2/2 ,0.56 * 1000 - 500);
+  box.rotation.set(0, 0.2 * Math.PI * 2, 0);
+  boxes.push(box);
+  scene.add(box);
+  
 
-    box.position.set(Math.random() * 1000 - 500, height/2 ,Math.random() * 1000 - 500);
-    box.rotation.set(0, Math.random() * Math.PI * 2, 0);
-    
-    boxes.push(box);
-    scene.add(box);
-  }
-
-  var coreTexture = new THREE.ImageUtils.loadTexture( "textures/purple_blue.jpg" );
-  for(var i = 0; i < 50; i++){
-    var material = new THREE.MeshLambertMaterial({ emissive:0x505050, map: coreTexture, color: 0xffffff});
-    
-    var height = Math.random() * 100+30;
-    
-    var box = new THREE.Mesh( new THREE.CubeGeometry(height, height, height), material);
-
-    box.position.set(Math.random() * 1000 - 500, Math.random() * 150 - 300 ,Math.random() * 1000 - 500);
-    box.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
-    
-    core.push(box);
-    scene.add(box);
-  }
-
-  for(var i = 0; i < 100; i++){
-    var material = new THREE.MeshLambertMaterial({ emissive:0x008000, color: 0x00FF00});
-    
-    var size = Math.random() * 15+3;
-    
-    var box = new THREE.Mesh( new THREE.CubeGeometry(size, size*0.1, size*0.1), material);
-
-    box.position.set(Math.random() * 1000 - 500, Math.random() * 100 + 100 ,Math.random() * 1000 - 500);
+ 
+  
+    var material = new THREE.MeshLambertMaterial({ emissive:0x008000, color: 0xFFFF00});
+    var size = 0.5 * 15+3;
+    var tape1 = new THREE.Mesh( new THREE.CubeGeometry(size*15, size*0.2, size*0.01), material);
+    tape1.position.set(0.6 * 1000 - 500, -0.1 * 800 + 100 ,0.5 * 1000 - 500);
     //box.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
+    scene.add(tape1);
     
-    var speedVector;
-    if(Math.random() > 0.5){
-      speedVector = new THREE.Vector3(0, 0, Math.random() * 1.5 + 0.5);
-      box.rotation.y = Math.PI / 2;
-    } else {
-      speedVector = new THREE.Vector3(Math.random() * 1.5 + 0.5, 0, 0);
-    }
-
-    dataPackets.push({
-      obj: box,
-      speed: speedVector
-    });
-    scene.add(box);
+    var tape2 = new THREE.Mesh( new THREE.CubeGeometry(size*15, size*0.2, size*0.01), material);
+    tape2.position.set(0.52 * 1000 - 500, -0.1 * 800 + 100 ,0.579 * 1000 - 500);
+    tape2.rotation.y = Math.PI/2;
+    scene.add(tape2);
+    
+    var tape3 = new THREE.Mesh( new THREE.CubeGeometry(size*15, size*0.2, size*0.01), material);
+    tape3.position.set(0.6 * 1000 - 500, -0.1 * 800 + 100 ,0.656 * 1000 - 500);
+    //box.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
+    scene.add(tape3);
+    
+    var tape4 = new THREE.Mesh( new THREE.CubeGeometry(size*15, size*0.2, size*0.01), material);
+    tape4.position.set(0.68 * 1000 - 500, -0.1 * 800 + 100 ,0.579 * 1000 - 500);
+    tape4.rotation.y = Math.PI/2;
+    scene.add(tape4);
+    
+   
   }
-}
+
 
 
 function init(){
