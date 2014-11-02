@@ -24,6 +24,9 @@ var viewAngle;
 
 var velocity;
 var oculusBridge;
+var raycaster;
+var container;
+var particleMaterial;
 
 // Map for key states
 var keys = [];
@@ -80,7 +83,7 @@ function initGeometry(){
   floorTexture.repeat.set( 50, 50 );
   floorTexture.anisotropy = 32;
 
-  var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, transparent:true, opacity:1.0 } );
+  var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, transparent:false, opacity:1.0 } );
   var floorGeometry = new THREE.PlaneGeometry(2000, 2000, 10, 10);
   var floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.rotation.x = -Math.PI / 2;
@@ -134,17 +137,46 @@ function initGeometry(){
   var geometry   = new THREE.SphereGeometry(4,10,10);
   var material1  = new THREE.MeshPhongMaterial();
   material1.map = THREE.ImageUtils.loadTexture("textures/evidence1.jpg");
+  material1.opacity = 0.2;
   var evidenceMesh1 = new THREE.Mesh(geometry, material1);
   evidenceMesh1.position.set(0.6 * 1000 - 500, -0.1 * 960 + 100 ,0.6 * 1000 - 500);
+  boxes.push(evidenceMesh1);
   scene.add(evidenceMesh1);
   
-  evidenceTexture2 = new THREE.ImageUtils.loadTexture( "textures/evidence2.jpg" );
+  var evidenceTexture2 = new THREE.ImageUtils.loadTexture( "textures/evidence2.jpg" );
   var material2 = new THREE.MeshLambertMaterial({map: evidenceTexture2});
+  material2.opacity = 0.2;
   box = new THREE.Mesh( new THREE.CubeGeometry(3, 0.5 * 10+5, 8), material2);
   box.position.set(0.54 * 1000 - 500, 0.2/2 ,0.56 * 1000 - 500);
   box.rotation.set(0, 0.2 * Math.PI * 2, 0);
   boxes.push(box);
   scene.add(box);
+  
+  var evidenceTexture3 = new THREE.ImageUtils.loadTexture( "textures/evidence3.jpg" );
+  var material3 = new THREE.MeshLambertMaterial({map: evidenceTexture3});
+  material3.opacity = 1.0;
+  var radius   = 2;
+  var segments = 64;
+  var geometry = new THREE.CircleGeometry( radius, segments );
+  box = new THREE.Mesh(geometry, material3);
+  box.position.set(0.54 * 1000 - 500, 3 ,0.6 * 1000 - 500);
+  box.rotation.y = Math.PI /4;
+  box.rotation.x = -Math.PI /4;
+  boxes.push(box);
+  scene.add(box);
+  
+  
+  var evidenceTexture4 = new THREE.ImageUtils.loadTexture( "textures/evidence4.jpg" );
+  var material4 = new THREE.MeshLambertMaterial({map: evidenceTexture4});
+  material4.opacity = 1.0;
+  var geometry = new THREE.CylinderGeometry( 2, 2, 10, 32 );
+  box = new THREE.Mesh(geometry, material4);
+  box.position.set(0.68 * 1000 - 500, 3 ,0.6 * 1000 - 500);
+  box.rotation.y = Math.PI /4;
+  box.rotation.x = -Math.PI /4;
+  boxes.push(box);
+  scene.add(box);
+  
   
 
  
@@ -177,7 +209,10 @@ function initGeometry(){
 
 
 function init(){
-
+ 
+  container = document.createElement( 'div' );
+  document.body.appendChild( container );
+	
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
   document.addEventListener('mousedown', onMouseDown, false);
@@ -215,6 +250,8 @@ function init(){
   oculusBridge.connect();
 
   riftCam = new THREE.OculusRiftEffect(renderer);
+  raycaster = new THREE.Raycaster();
+  document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 }
 
 
@@ -366,6 +403,46 @@ function updateInput(delta) {
     camera.position.set(bodyPosition.x, bodyPosition.y, bodyPosition.z);
   }
 }
+
+
+
+
+function onDocumentMouseDown( event ) {
+    
+  if(event.button == 2){	
+	event.preventDefault();
+
+	var vector = new THREE.Vector3();
+	vector.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+	vector.unproject( camera );
+
+	raycaster.ray.set( camera.position, vector.sub( camera.position ).normalize() );
+
+	var intersects = raycaster.intersectObjects( boxes );
+
+	if ( intersects.length > 0 ) {
+
+		
+		var radius   = 1;
+	    var segments = 64;
+	    var material = new THREE.MeshBasicMaterial( { color: 0x0000cc, transparent:true, opacity:1.0 } );
+	    var geometry = new THREE.CircleGeometry( radius, segments );
+	    var marker = new THREE.Line(geometry, material);
+	    marker.position.copy( intersects[ 0 ].point );
+	    marker.rotation.y = Math.PI / 2;
+	    // Remove center vertex
+	    geometry.vertices.shift();
+	    scene.add(marker);
+		
+
+	}
+  }	
+}
+
+
+
+
+
 
 
 function animate() {
